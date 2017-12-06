@@ -91,8 +91,12 @@ predictedTrue = np.zeros(6)
 path = './data/test'
 for img_path in glob.glob(path+'\*.jpg'):
     img = Image.open(img_path)
-    img = np.expand_dims(img,axis=0)
-    classes =model.predict(img)
+    temp = np.zeros((1,48,48,3))
+    img = np.array(img)
+    temp[0,:,:,0] = img
+    temp[0,:,:,1] = img
+    temp[0,:,:,2] = img
+    classes =model.predict(temp)
     label = np.argmax(classes)
     predicted.append([label,kelas[label]])
     
