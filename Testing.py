@@ -74,6 +74,14 @@ def create_model():
     model.add(Activation('softmax'))
     return model
 
+def loadLabel(filename):
+    with open(filename,'r') as f:
+        for line in f:
+            line = line.split(', ')
+            target = [int(i) for i in line]
+    return target
+
+
 def load_trained_model(weights_path):
    model = create_model()
    model.load_weights(weights_path)
@@ -86,7 +94,9 @@ model.compile(loss='categorical_crossentropy',
               optimizer=opt,
               metrics=['accuracy'])
 predicted = []
+hasil = []
 predictedLabel = 1
+target = loadLabel('target.txt')
 predictedTrue = np.zeros(6)
 path = './data/test'
 for img_path in glob.glob(path+'\*.jpg'):
@@ -98,11 +108,14 @@ for img_path in glob.glob(path+'\*.jpg'):
     temp[0,:,:,2] = img
     classes =model.predict(temp)
     label = np.argmax(classes)
-    predicted.append([label,kelas[label]])
-    
-temp = np.array(predicted)
-print("total data" +temp.shape[0])
+    predicted.append(label)
+    hasil.append([label,kelas[label]])
 
+temp = np.array(hasil)
 
-df = pandas.DataFrame(predicted,columns=["Label","Emotion"])
+accuracy = np.sum(np.array(predicted) == np.array(target))/len(target)
+
+print("accuracy : ",accuracy)
+
+df = pandas.DataFrame(hasil,columns=["Label","Emotion"])
 df.to_excel('HasilLabel.xlsx')
